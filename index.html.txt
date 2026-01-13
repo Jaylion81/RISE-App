@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RISE 15-Minute Memory Trainer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .step {
+      margin: 15px 0;
+      padding: 12px;
+      background: #1e293b;
+      border-radius: 8px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 60px;
+      border-radius: 6px;
+      border: none;
+      padding: 8px;
+      margin-top: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #22c55e;
+      color: #000;
+      cursor: pointer;
+    }
+    .timer {
+      text-align: center;
+      font-size: 32px;
+      margin: 20px 0;
+    }
+    .streak {
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h1>RISE 15-Minute Memory Trainer</h1>
+<p style="text-align:center;">Retrieve • Interleave • Space • Elaborate</p>
+
+<div class="timer" id="timer">15:00</div>
+<button onclick="startTimer()">Start Session</button>
+
+<div class="step">
+  <h2>Intent Lock</h2>
+  <textarea placeholder="One idea I must remember today..."></textarea>
+</div>
+
+<div class="step">
+  <h2>Retrieve (Blind Recall)</h2>
+  <textarea placeholder="3 things I remember from yesterday..."></textarea>
+</div>
+
+<div class="step">
+  <h2>2-Sentence Summary (Out Loud)</h2>
+  <textarea placeholder="I learned ___ because ___..."></textarea>
+</div>
+
+<div class="step">
+  <h2>Interleave (Contrast)</h2>
+  <textarea placeholder="This differs from ___ because..."></textarea>
+</div>
+
+<div class="step">
+  <h2>Interleave (Real-Life Link)</h2>
+  <textarea placeholder="This shows up in real life when..."></textarea>
+</div>
+
+<div class="step">
+  <h2>Space (Older Recall)</h2>
+  <textarea placeholder="Something I remember from earlier this week..."></textarea>
+</div>
+
+<div class="step">
+  <h2>One-Line Anchor</h2>
+  <textarea placeholder="If I forget everything else, remember this..."></textarea>
+</div>
+
+<div class="step">
+  <h2>Teach It Simply</h2>
+  <textarea placeholder="Explain like I'm 12 years old..."></textarea>
+</div>
+
+<div class="step">
+  <h2>48-Hour Application</h2>
+  <textarea placeholder="Within 48 hours I will apply this by..."></textarea>
+</div>
+
+<button onclick="completeSession()">Complete Session</button>
+
+<div class="streak" id="streak"></div>
+
+<script>
+  let time = 900;
+  let timerInterval;
+
+  function startTimer() {
+    clearInterval(timerInterval);
+    time = 900;
+    timerInterval = setInterval(() => {
+      let minutes = Math.floor(time / 60);
+      let seconds = time % 60;
+      document.getElementById("timer").textContent =
+        `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+      time--;
+      if (time < 0) clearInterval(timerInterval);
+    }, 1000);
+  }
+
+  function completeSession() {
+    const today = new Date().toDateString();
+    const lastDate = localStorage.getItem("riseLastDate");
+    let streak = parseInt(localStorage.getItem("riseStreak")) || 0;
+
+    if (lastDate !== today) {
+      streak++;
+      localStorage.setItem("riseStreak", streak);
+      localStorage.setItem("riseLastDate", today);
+    }
+
+    document.getElementById("streak").textContent =
+      `🔥 Current RISE Streak: ${streak} day(s)`;
+    alert("Great work. Memory strengthened.");
+  }
+
+  document.getElementById("streak").textContent =
+    `🔥 Current RISE Streak: ${localStorage.getItem("riseStreak") || 0} day(s)`;
+</script>
+
+</body>
+</html>
