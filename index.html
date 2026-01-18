@@ -1,152 +1,373 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>RISE 15-Minute Memory Trainer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #0f172a;
       color: #e5e7eb;
       padding: 20px;
-      max-width: 600px;
+      max-width: 720px;
       margin: auto;
+      line-height: 1.35;
     }
     h1, h2 {
       text-align: center;
+      margin: 8px 0;
     }
-    .step {
-      margin: 15px 0;
-      padding: 12px;
-      background: #1e293b;
-      border-radius: 8px;
+    p {
+      margin: 8px 0;
     }
-    textarea {
-      width: 100%;
-      min-height: 60px;
-      border-radius: 6px;
-      border: none;
-      padding: 8px;
-      margin-top: 5px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 15px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      background: #22c55e;
-      color: #000;
-      cursor: pointer;
+    .sub {
+      text-align: center;
+      opacity: 0.9;
+      margin-bottom: 18px;
     }
     .timer {
       text-align: center;
-      font-size: 32px;
-      margin: 20px 0;
+      font-size: 38px;
+      margin: 16px 0 10px;
+      letter-spacing: 1px;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    button {
+      padding: 12px 14px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      background: #22c55e;
+      color: #000;
+      cursor: pointer;
+      min-width: 220px;
+    }
+    button.secondary {
+      background: #38bdf8;
+      color: #001018;
+      min-width: 220px;
+    }
+    button.ghost {
+      background: #334155;
+      color: #e5e7eb;
+      min-width: 220px;
     }
     .streak {
       text-align: center;
-      margin-top: 10px;
+      margin-top: 6px;
       font-weight: bold;
+    }
+    .step {
+      margin: 14px 0;
+      padding: 14px;
+      background: #1e293b;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .step h2 {
+      margin: 6px 0 10px;
+      font-size: 20px;
+    }
+    .helper {
+      font-size: 14px;
+      opacity: 0.9;
+      margin: 0 0 10px;
+      text-align: left;
+    }
+    textarea {
+      width: 100%;
+      min-height: 70px;
+      border-radius: 10px;
+      border: none;
+      padding: 10px;
+      margin-top: 6px;
+      font-size: 15px;
+      resize: vertical;
+    }
+    ul {
+      margin: 10px 0 0 18px;
+    }
+    li {
+      margin: 6px 0;
+    }
+    details summary {
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .small {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+    .footer-space {
+      height: 18px;
     }
   </style>
 </head>
+
 <body>
+  <h1>RISE 15-Minute Memory Trainer</h1>
+  <div class="sub">Retrieve • Interleave • Space • Elaborate</div>
 
-<h1>RISE 15-Minute Memory Trainer</h1>
-<p style="text-align:center;">Retrieve • Interleave • Space • Elaborate</p>
+  <div class="timer" id="timer">15:00</div>
 
-<div class="timer" id="timer">15:00</div>
-<button onclick="startTimer()">Start Session</button>
+  <div class="row">
+    <button onclick="startTimer()">Start Session</button>
+    <button class="ghost" onclick="resetTimer()">Reset Timer</button>
+  </div>
 
-<div class="step">
-  <h2>Intent Lock</h2>
-  <textarea placeholder="One idea I must remember today..."></textarea>
-</div>
+  <div class="streak" id="streak">🔥 Current RISE Streak: 0 day(s)</div>
 
-<div class="step">
-  <h2>Retrieve (Blind Recall)</h2>
-  <textarea placeholder="3 things I remember from yesterday..."></textarea>
-</div>
+  <!-- Clarity Panel -->
+  <div class="step">
+    <details open>
+      <summary>🧭 When memory feels blank</summary>
+      <p class="helper">
+        This app is <b>not testing you</b>. It is training you.<br><br>
+        • Forgetting is expected<br>
+        • Attempting recall is the workout<br>
+        • Fragments are progress<br>
+        • Speaking imperfectly builds clarity<br><br>
+        If nothing comes to mind yet, write that — then continue.
+      </p>
+      <p class="small">
+        Tip: Replace “yesterday” with “my last session” (even if it was days ago).
+      </p>
+    </details>
+  </div>
 
-<div class="step">
-  <h2>2-Sentence Summary (Out Loud)</h2>
-  <textarea placeholder="I learned ___ because ___..."></textarea>
-</div>
+  <!-- Intent Lock -->
+  <div class="step">
+    <h2>Intent Lock</h2>
+    <p class="helper">What is the <b>one idea</b> you want to walk away remembering today?</p>
+    <textarea id="intentInput" placeholder="One idea I must remember today is..."></textarea>
+  </div>
 
-<div class="step">
-  <h2>Interleave (Contrast)</h2>
-  <textarea placeholder="This differs from ___ because..."></textarea>
-</div>
+  <!-- Retrieve -->
+  <div class="step">
+    <h2>Retrieve — What comes to mind?</h2>
+    <p class="helper">
+      From your <b>last session</b> (even if it was days ago), write anything that comes to mind.
+      “Nothing clear yet” is valid.
+    </p>
+    <textarea id="retrieveInput" placeholder="Fragments, keywords, or: 'Nothing clear yet.'"></textarea>
+    <div class="row" style="margin-top:10px;">
+      <button class="secondary" onclick="handleNoRecall()">I don’t remember yet — guide me</button>
+    </div>
+  </div>
 
-<div class="step">
-  <h2>Interleave (Real-Life Link)</h2>
-  <textarea placeholder="This shows up in real life when..."></textarea>
-</div>
+  <!-- 2-Sentence Summary -->
+  <div class="step">
+    <h2>2-Sentence Summary</h2>
+    <p class="helper">
+      If you can, say this out loud. One imperfect sentence is enough.
+      <br>Format: “I learned ___ because ___. This matters because ___.”
+    </p>
+    <textarea id="summaryInput" placeholder="I learned ___ because ___. This matters because ___."></textarea>
+  </div>
 
-<div class="step">
-  <h2>Space (Older Recall)</h2>
-  <textarea placeholder="Something I remember from earlier this week..."></textarea>
-</div>
+  <!-- Interleave: Contrast -->
+  <div class="step">
+    <h2>Interleave — Contrast</h2>
+    <p class="helper">How is this different from a related idea you’ve encountered before?</p>
+    <textarea id="contrastInput" placeholder="This differs from ___ because..."></textarea>
+  </div>
 
-<div class="step">
-  <h2>One-Line Anchor</h2>
-  <textarea placeholder="If I forget everything else, remember this..."></textarea>
-</div>
+  <!-- Interleave: Real-life link -->
+  <div class="step">
+    <h2>Interleave — Real-life Link</h2>
+    <p class="helper">Where does this show up in real life (work, family, goals, leadership, health)?</p>
+    <textarea id="reallifeInput" placeholder="This shows up in real life when..."></textarea>
+  </div>
 
-<div class="step">
-  <h2>Teach It Simply</h2>
-  <textarea placeholder="Explain like I'm 12 years old..."></textarea>
-</div>
+  <!-- Space: Older recall -->
+  <div class="step">
+    <h2>Space — Older Recall</h2>
+    <p class="helper">Recall one idea from earlier this week (or a previous session). No notes.</p>
+    <textarea id="olderRecallInput" placeholder="From earlier this week / previous sessions, I remember..."></textarea>
+  </div>
 
-<div class="step">
-  <h2>48-Hour Application</h2>
-  <textarea placeholder="Within 48 hours I will apply this by..."></textarea>
-</div>
+  <!-- One-Line Anchor -->
+  <div class="step">
+    <h2>One-Line Anchor</h2>
+    <p class="helper">
+      Write the single sentence that will survive. Keep it short and strong.
+      This is what the Weekly Review will store.
+    </p>
+    <textarea id="anchorInput" placeholder="If I forget everything else, remember this..."></textarea>
+  </div>
 
-<button onclick="completeSession()">Complete Session</button>
+  <!-- Teach It Simply -->
+  <div class="step">
+    <h2>Teach It Simply</h2>
+    <p class="helper">
+      Explain this out loud as if to a friend or a 12-year-old.
+      Messy explanations are how fluency develops.
+    </p>
+    <textarea id="teachInput" placeholder="Simple explanation + example + analogy..."></textarea>
+  </div>
 
-<div class="streak" id="streak"></div>
+  <!-- 48-hour Application -->
+  <div class="step">
+    <h2>48-Hour Application</h2>
+    <p class="helper">What small action in the next 48 hours proves you understood this?</p>
+    <textarea id="applyInput" placeholder="Within 48 hours I will apply this by..."></textarea>
+  </div>
 
-<script>
-  let time = 900;
-  let timerInterval;
+  <!-- Complete -->
+  <div class="row">
+    <button onclick="completeSession()">Complete Session</button>
+    <button class="ghost" onclick="clearTextboxes()">Clear Text Boxes</button>
+  </div>
 
-  function startTimer() {
-    clearInterval(timerInterval);
-    time = 900;
-    timerInterval = setInterval(() => {
-      let minutes = Math.floor(time / 60);
-      let seconds = time % 60;
+  <!-- Weekly Review -->
+  <div class="step">
+    <h2>📅 Weekly Review (Last 7 Anchors)</h2>
+    <p class="helper">
+      Speak these out loud without notes. For each anchor:
+      What does it mean? Why does it matter? Where did/will you apply it?
+    </p>
+    <ul id="weeklyList"></ul>
+    <p class="small">
+      If you miss a day, no problem. Continue. Consistency is built by returning.
+    </p>
+  </div>
+
+  <div class="footer-space"></div>
+
+  <script>
+    // --- Timer ---
+    let time = 900; // 15 minutes
+    let timerInterval;
+
+    function renderTime() {
+      const minutes = Math.floor(time / 60);
+      const seconds = time % 60;
       document.getElementById("timer").textContent =
         `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-      time--;
-      if (time < 0) clearInterval(timerInterval);
-    }, 1000);
-  }
-
-  function completeSession() {
-    const today = new Date().toDateString();
-    const lastDate = localStorage.getItem("riseLastDate");
-    let streak = parseInt(localStorage.getItem("riseStreak")) || 0;
-
-    if (lastDate !== today) {
-      streak++;
-      localStorage.setItem("riseStreak", streak);
-      localStorage.setItem("riseLastDate", today);
     }
 
-    document.getElementById("streak").textContent =
-      `🔥 Current RISE Streak: ${streak} day(s)`;
-    alert("Great work. Memory strengthened.");
-  }
+    function startTimer() {
+      clearInterval(timerInterval);
+      // If someone paused at 0, restart fresh:
+      if (time <= 0) time = 900;
+      timerInterval = setInterval(() => {
+        renderTime();
+        time--;
+        if (time < 0) {
+          clearInterval(timerInterval);
+          time = 0;
+          renderTime();
+        }
+      }, 1000);
+    }
 
-  document.getElementById("streak").textContent =
-    `🔥 Current RISE Streak: ${localStorage.getItem("riseStreak") || 0} day(s)`;
-</script>
+    function resetTimer() {
+      clearInterval(timerInterval);
+      time = 900;
+      renderTime();
+    }
 
+    // --- Support flow for "no recall" days ---
+    function handleNoRecall() {
+      alert(
+        "That’s normal — this is training.\n\n" +
+        "Do this:\n" +
+        "1) In the box, write: 'Nothing clear yet.'\n" +
+        "2) Skim headings/highlights for 10–30 seconds (not full rereading).\n" +
+        "3) Say one messy sentence out loud: 'I think it was about ___, and it mattered because ___.'\n\n" +
+        "Then continue the session."
+      );
+
+      // Help the user by inserting a starter phrase if empty
+      const r = document.getElementById("retrieveInput");
+      if (!r.value.trim()) r.value = "Nothing clear yet.";
+      r.focus();
+    }
+
+    // --- Streak + Weekly Anchors ---
+    function getTodayISO() {
+      return new Date().toISOString().split("T")[0];
+    }
+
+    function updateStreakDisplay() {
+      const streak = localStorage.getItem("riseStreak") || 0;
+      document.getElementById("streak").textContent =
+        `🔥 Current RISE Streak: ${streak} day(s)`;
+    }
+
+    function loadWeeklyReview() {
+      const anchors = JSON.parse(localStorage.getItem("riseAnchors")) || [];
+      const lastSeven = anchors.slice(-7).reverse();
+      const list = document.getElementById("weeklyList");
+      list.innerHTML = "";
+
+      if (lastSeven.length === 0) {
+        const li = document.createElement("li");
+        li.textContent = "No anchors saved yet. Complete your first session to start building your weekly review.";
+        list.appendChild(li);
+        return;
+      }
+
+      lastSeven.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.date}: ${item.text}`;
+        list.appendChild(li);
+      });
+    }
+
+    function completeSession() {
+      const today = getTodayISO();
+
+      // Streak logic
+      const lastDate = localStorage.getItem("riseLastDate");
+      let streak = parseInt(localStorage.getItem("riseStreak")) || 0;
+
+      if (lastDate !== today) {
+        streak++;
+        localStorage.setItem("riseStreak", streak);
+        localStorage.setItem("riseLastDate", today);
+      }
+
+      // Save One-Line Anchor
+      const anchors = JSON.parse(localStorage.getItem("riseAnchors")) || [];
+      const anchorText = document.getElementById("anchorInput").value.trim();
+
+      if (anchorText !== "") {
+        anchors.push({ date: today, text: anchorText });
+        localStorage.setItem("riseAnchors", JSON.stringify(anchors));
+      }
+
+      updateStreakDisplay();
+      loadWeeklyReview();
+
+      alert("Session complete. Progress made — even if recall felt messy.");
+    }
+
+    // --- Convenience helpers ---
+    function clearTextboxes() {
+      const ids = [
+        "intentInput", "retrieveInput", "summaryInput", "contrastInput",
+        "reallifeInput", "olderRecallInput", "anchorInput", "teachInput", "applyInput"
+      ];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+      });
+      alert("Text cleared. Your streak and weekly anchors are still saved.");
+    }
+
+    // Initialize UI on load
+    renderTime();
+    updateStreakDisplay();
+    loadWeeklyReview();
+  </script>
 </body>
-
 </html>
